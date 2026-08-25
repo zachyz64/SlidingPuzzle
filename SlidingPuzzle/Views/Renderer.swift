@@ -83,5 +83,22 @@ class Renderer: NSObject, MTKViewDelegate{
     
     func draw(in view: MTKView) {
         
+        guard let drawable = view.currentDrawable else {
+            return
+        }
+        
+        let commandBuffer = commandQueue.makeCommandBuffer()
+        
+        let renderPassDescriptor = view.currentRenderPassDescriptor
+        renderPassDescriptor?.colorAttachments[0].clearColor = MTLClearColorMake(0.0, 0.5, 0.5, 1.0)
+        renderPassDescriptor?.colorAttachments[0].loadAction = .clear
+        renderPassDescriptor?.colorAttachments[0].storeAction = .store
+        
+        let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor!)
+        
+        renderEncoder?.endEncoding()
+        
+        commandBuffer?.present(drawable)
+        commandBuffer?.commit()
     }
 }
