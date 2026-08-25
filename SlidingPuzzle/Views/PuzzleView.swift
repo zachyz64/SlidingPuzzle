@@ -36,3 +36,7 @@ struct PuzzleView : UIViewRepresentable {
     }
     
 }
+
+#Preview {
+    PuzzleView()
+}
