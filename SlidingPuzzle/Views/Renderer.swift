@@ -99,9 +99,20 @@ class Renderer: NSObject, MTKViewDelegate{
         
         let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor!)
         
+        drawTiles(renderEncoder: renderEncoder)
+        
         renderEncoder?.endEncoding()
         
         commandBuffer?.present(drawable)
         commandBuffer?.commit()
+    }
+    
+    func drawTiles(renderEncoder: MTLRenderCommandEncoder?) {
+        
+        renderEncoder?.setRenderPipelineState(pipeline)
+        
+        renderEncoder?.setFragmentSamplerState(sampler, index: 0)
+        renderEncoder?.setFragmentTexture(puzzle.texture, index: 0)
+        renderEncoder?.setCullMode(.none)
     }
 }

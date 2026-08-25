@@ -13,6 +13,8 @@ class Grid: ObservableObject {
     
     let gridSize: Int = 2
     
+    var texture: MTLTexture?
+    
     @Published var tilesToSlide: [Tile]
     @Published var freeSpaceAddress: Int
     @Published var cachedTileAddress: Int
@@ -25,19 +27,19 @@ class Grid: ObservableObject {
         self.cachedTileAddress = 0
         self.slideInProgress = false
         self.slideDistance = 0.0
-        createTiles(device, filename, filenameExtension)
+        self.texture = loadTexture(device: device, filename, filenameExtension)
+        createTiles(device)
     }
         
-    func createTiles(_ device: MTLDevice, _ filename: String, _ filenameExtension: String) {
-        
+    func loadTexture(device: MTLDevice, _ filename: String, _ filenameExtension: String) -> MTLTexture {
         guard let textureURL = Bundle.main.url(forResource: filename, withExtension: filenameExtension) else {
             fatalError("Failed to find image \(filename).\(filenameExtension)")
         }
         
         let textureLoader = MTKTextureLoader(device: device)
-        var texture: MTLTexture?
+        var newTexture: MTLTexture?
         do {
-            texture = try textureLoader.newTexture(URL: textureURL,
+            newTexture = try textureLoader.newTexture(URL: textureURL,
                                                    options: [
                                                         .SRGB: false,
                                                         .generateMipmaps: false,
@@ -47,10 +49,16 @@ class Grid: ObservableObject {
             fatalError("Couldn't load material \(filename)")
         }
         
+        return newTexture!
+    }
+    
+    func createTiles(_ device: MTLDevice) {
+        
         for i in 1...gridSize {
             for j in 1...gridSize {
                 // Tile Position
-                let screenQuad: Quad = Quad(topLeft: simd_float2(x: -1 + 2 * Float(i-1) / Float(gridSize),
+                let screenQuad: Quad = Quad(device: device,
+                                            topLeft: simd_float2(x: -1 + 2 * Float(i-1) / Float(gridSize),
                                                                  y: -1 + 2 * Float(j) / Float(gridSize)),
                                             topRight: simd_float2(x: -1 + 2 * Float(i) / Float(gridSize),
                                                                   y: -1 + 2 * Float(j) / Float(gridSize)),
@@ -59,13 +67,14 @@ class Grid: ObservableObject {
                                             bottomRight: simd_float2(x: -1 + 2 * Float(i) / Float(gridSize),
                                                                      y: -1 + 2 * Float(j-1) / Float(gridSize)))
                 // Tile TexCoords
-                let textureQuad: Quad = Quad(topLeft: simd_float2(x: Float(i-1) / Float(gridSize),
+                let textureQuad: Quad = Quad(device: device,
+                                             topLeft: simd_float2(x: Float(i-1) / Float(gridSize),
                                                                   y: Float(j) / Float(gridSize)),
-                                            topRight: simd_float2(x: Float(i) / Float(gridSize),
+                                             topRight: simd_float2(x: Float(i) / Float(gridSize),
                                                                   y: Float(j) / Float(gridSize)),
-                                            bottomLeft: simd_float2(x: Float(i-1) / Float(gridSize),
+                                             bottomLeft: simd_float2(x: Float(i-1) / Float(gridSize),
                                                                     y: Float(j-1) / Float(gridSize)),
-                                            bottomRight: simd_float2(x: Float(i) / Float(gridSize),
+                                             bottomRight: simd_float2(x: Float(i) / Float(gridSize),
                                                                      y: Float(j-1) / Float(gridSize)))
                 
                 var tile = Tile(texture: texture!, screenQuad: screenQuad, textureQuad: textureQuad)
