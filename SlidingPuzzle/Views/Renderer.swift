@@ -22,6 +22,8 @@ class Renderer: NSObject, MTKViewDelegate{
     
     let sampler: MTLSamplerState
 
+    let puzzle: Grid
+    
     init (_ parent: PuzzleView) {
         self.parent = parent
         
@@ -48,6 +50,7 @@ class Renderer: NSObject, MTKViewDelegate{
         
         vertexDescriptor.layouts[0].stride = offset
         
+        self.puzzle = Grid(device: device, filename: "Exusiai", filenameExtension: "jpg")
         
         let library = device.makeDefaultLibrary()!
         
