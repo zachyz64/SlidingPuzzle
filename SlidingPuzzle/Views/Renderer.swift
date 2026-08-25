@@ -20,6 +20,8 @@ class Renderer: NSObject, MTKViewDelegate{
     
     let depthStencilState: MTLDepthStencilState
     
+    var scene: GameScene
+    
     let sampler: MTLSamplerState
 
     init (_ parent: PuzzleView) {
