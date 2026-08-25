@@ -53,8 +53,8 @@ class Renderer: NSObject, MTKViewDelegate{
         
         pipeline = PipelineBuilder.BuildPipeline(device: device,
                                                  library: library,
-                                                 vs: "vertex",
-                                                 fs: "fragment",
+                                                 vs: "vertexShader",
+                                                 fs: "fragmentShader",
                                                  vertexDescriptor: vertexDescriptor,
                                                  depthEnabled: true)
         
