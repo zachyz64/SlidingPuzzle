@@ -10,7 +10,7 @@ import SwiftUI
 internal import Combine
 
 final class GameLogic: ObservableObject {
-    var objectWillChange: PassthroughSubject<GameLogic, Never>()
+    var objectWillChange = PassthroughSubject<GameLogic, Never>()
     
     
     enum Direction {
