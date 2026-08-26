@@ -133,6 +133,11 @@ class Renderer: NSObject, MTKViewDelegate{
         renderEncoder?.setVertexBuffer(vertexBuffer,
                                        offset: 0,
                                        index: 0)
+        
+        var tint: simd_float3 = [0.5, 0.5, 0.5]
+        renderEncoder?.setFragmentBytes(&tint,
+                                        length: MemoryLayout<simd_float3>.stride,
+                                        index: 0)
         renderEncoder?.drawPrimitives(type: .triangle,
                                       vertexStart: 0,
                                       vertexCount: vertices.count)

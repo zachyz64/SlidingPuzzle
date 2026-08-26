@@ -28,9 +28,12 @@ vertex Fragment vertexShader(const VertexIn vertex_in [[stage_in]])
     return frag;
 }
 
-fragment float4 fragmentShader(Fragment frag [[stage_in]], texture2d<float> puzzleTexture [[texture(0)]], sampler puzzleSampler [[sampler(0)]])
+fragment float4 fragmentShader(Fragment frag [[stage_in]],
+                               constant float3& tint [[buffer(0)]],
+                               texture2d<float> puzzleTexture [[texture(0)]],
+                               sampler puzzleSampler [[sampler(0)]])
 {
-    float3 color = float3(puzzleTexture.sample(puzzleSampler, frag.texCoord));
+    float3 color = tint * float3(puzzleTexture.sample(puzzleSampler, frag.texCoord));
     float alpha = puzzleTexture.sample(puzzleSampler, frag.texCoord).a;
     
     return float4(color, alpha);
