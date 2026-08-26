@@ -14,6 +14,7 @@ class Grid: ObservableObject {
     let gridSize: Int = 2
     
     var texture: MTLTexture?
+    var tiles: [Tile]
     
     @Published var tilesToSlide: [Tile]
     @Published var freeSpaceAddress: Int
@@ -22,6 +23,7 @@ class Grid: ObservableObject {
     @Published var slideDistance: Float
     
     init(device: MTLDevice, filename: String, filenameExtension: String) {
+        self.tiles = []
         self.tilesToSlide = []
         self.freeSpaceAddress = 0
         self.cachedTileAddress = 0
@@ -44,7 +46,6 @@ class Grid: ObservableObject {
                                                    options: [
                                                         .SRGB: false,
                                                         .generateMipmaps: false,
-                                                        .origin: MTKTextureLoader.Origin.flippedVertically
                                                    ])
         } catch {
             fatalError("Couldn't load material \(filename)")
@@ -76,7 +77,7 @@ class Grid: ObservableObject {
                                              bottomRight: simd_float2(x: Float(i) / Float(gridSize),
                                                                       y: Float(j-1) / Float(gridSize)))
                 
-                var tile = Tile(device: device, screenQuad: screenQuad, textureQuad: textureQuad)
+                tiles.append(Tile(device: device, screenQuad: screenQuad, textureQuad: textureQuad))
             }
         }
     }

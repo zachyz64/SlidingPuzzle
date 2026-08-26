@@ -14,8 +14,9 @@ struct GameView: View {
                 .imageScale(.large)
                 .foregroundStyle(.tint)
             Text("Hello, world!")
+            Text("Sliding Puzzle")
             PuzzleView()
-                .frame(width: 800, height: 600)
+                .frame(width: 600, height: 600)
         }
         .padding()
     }

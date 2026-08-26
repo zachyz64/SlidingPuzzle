@@ -93,7 +93,7 @@ class Renderer: NSObject, MTKViewDelegate{
         let commandBuffer = commandQueue.makeCommandBuffer()
         
         let renderPassDescriptor = view.currentRenderPassDescriptor
-        renderPassDescriptor?.colorAttachments[0].clearColor = MTLClearColorMake(0.0, 0.5, 0.5, 1.0)
+        renderPassDescriptor?.colorAttachments[0].clearColor = MTLClearColorMake(0.8, 0.4, 0.1, 1.0)
         renderPassDescriptor?.colorAttachments[0].loadAction = .clear
         renderPassDescriptor?.colorAttachments[0].storeAction = .store
         
@@ -111,8 +111,21 @@ class Renderer: NSObject, MTKViewDelegate{
         
         renderEncoder?.setRenderPipelineState(pipeline)
         
+        let vertices: [simd_float2] = [
+            [-1.0, -1.0], [ 1.0, -1.0], [ 1.0,  1.0],
+            [ 1.0,  1.0], [-1.0,  1.0], [-1.0, -1.0]
+        ]
+        let vertexBuffer = device.makeBuffer(bytes: vertices,
+                                             length: vertices.count * MemoryLayout<simd_float2>.stride)
+        
+        renderEncoder?.setCullMode(.none)
         renderEncoder?.setFragmentSamplerState(sampler, index: 0)
         renderEncoder?.setFragmentTexture(puzzle.texture, index: 0)
-        renderEncoder?.setCullMode(.none)
+        renderEncoder?.setVertexBuffer(vertexBuffer,
+                                       offset: 0,
+                                       index: 0)
+        renderEncoder?.drawPrimitives(type: .triangle,
+                                      vertexStart: 0,
+                                      vertexCount: vertices.count)
     }
 }
