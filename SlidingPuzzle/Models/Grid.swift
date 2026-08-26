@@ -32,6 +32,7 @@ class Grid: ObservableObject {
     }
         
     func loadTexture(device: MTLDevice, _ filename: String, _ filenameExtension: String) -> MTLTexture {
+        
         guard let textureURL = Bundle.main.url(forResource: filename, withExtension: filenameExtension) else {
             fatalError("Failed to find image \(filename).\(filenameExtension)")
         }
@@ -57,8 +58,7 @@ class Grid: ObservableObject {
         for i in 1...gridSize {
             for j in 1...gridSize {
                 // Tile Position
-                let screenQuad: Quad = Quad(device: device,
-                                            topLeft: simd_float2(x: -1 + 2 * Float(i-1) / Float(gridSize),
+                let screenQuad: Quad = Quad(topLeft: simd_float2(x: -1 + 2 * Float(i-1) / Float(gridSize),
                                                                  y: -1 + 2 * Float(j) / Float(gridSize)),
                                             topRight: simd_float2(x: -1 + 2 * Float(i) / Float(gridSize),
                                                                   y: -1 + 2 * Float(j) / Float(gridSize)),
@@ -67,17 +67,16 @@ class Grid: ObservableObject {
                                             bottomRight: simd_float2(x: -1 + 2 * Float(i) / Float(gridSize),
                                                                      y: -1 + 2 * Float(j-1) / Float(gridSize)))
                 // Tile TexCoords
-                let textureQuad: Quad = Quad(device: device,
-                                             topLeft: simd_float2(x: Float(i-1) / Float(gridSize),
+                let textureQuad: Quad = Quad(topLeft: simd_float2(x: Float(i-1) / Float(gridSize),
                                                                   y: Float(j) / Float(gridSize)),
                                              topRight: simd_float2(x: Float(i) / Float(gridSize),
-                                                                  y: Float(j) / Float(gridSize)),
+                                                                   y: Float(j) / Float(gridSize)),
                                              bottomLeft: simd_float2(x: Float(i-1) / Float(gridSize),
-                                                                    y: Float(j-1) / Float(gridSize)),
+                                                                     y: Float(j-1) / Float(gridSize)),
                                              bottomRight: simd_float2(x: Float(i) / Float(gridSize),
-                                                                     y: Float(j-1) / Float(gridSize)))
+                                                                      y: Float(j-1) / Float(gridSize)))
                 
-                var tile = Tile(texture: texture!, screenQuad: screenQuad, textureQuad: textureQuad)
+                var tile = Tile(device: device, screenQuad: screenQuad, textureQuad: textureQuad)
             }
         }
     }

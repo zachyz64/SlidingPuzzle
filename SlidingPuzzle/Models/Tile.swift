@@ -8,27 +8,15 @@
 import MetalKit
 
 struct Quad {
-    let topLeft: simd_float2
-    let topRight: simd_float2
-    let bottomLeft: simd_float2
-    let bottomRight: simd_float2
     
-    let vertexBuffer: MTLBuffer?
-    let vertexCount: Int
+    let data: [simd_float2]
     
-    init(device: MTLDevice, topLeft: simd_float2, topRight: simd_float2, bottomLeft: simd_float2, bottomRight: simd_float2) {
-        self.topLeft = topLeft
-        self.topRight = topRight
-        self.bottomLeft = bottomLeft
-        self.bottomRight = bottomRight
+    init(topLeft: simd_float2, topRight: simd_float2, bottomLeft: simd_float2, bottomRight: simd_float2) {
         
-        let data: [simd_float2] = [
+        self.data = [
             bottomLeft, bottomRight, topRight,
             topRight, topLeft, bottomLeft
         ]
-        
-        self.vertexBuffer = device.makeBuffer(bytes: data, length: data.count * MemoryLayout<simd_float2>.stride)
-        self.vertexCount = data.count
     }
 }
 
@@ -36,9 +24,16 @@ class Tile {
     
     let screenQuad: Quad
     let textureQuad: Quad
+    let vertexBuffer: MTLBuffer?
+    let vertexCount: Int
     
-    init(texture: MTLTexture, screenQuad: Quad, textureQuad: Quad) {
+    init(device: MTLDevice, screenQuad: Quad, textureQuad: Quad) {
         self.screenQuad = screenQuad
         self.textureQuad = textureQuad
+        
+        let data = textureQuad.data
+        self.vertexBuffer = device.makeBuffer(bytes: data,
+                                              length: data.count * MemoryLayout<simd_float2>.stride)
+        self.vertexCount = data.count
     }
 }
