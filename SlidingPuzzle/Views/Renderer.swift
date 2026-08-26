@@ -8,6 +8,11 @@
 import Foundation
 import MetalKit
 
+struct Vertex {
+    let position: simd_float2
+    let texCoord: simd_float2
+}
+
 class Renderer: NSObject, MTKViewDelegate{
     var parent: PuzzleView
     var device: MTLDevice!
@@ -37,11 +42,11 @@ class Renderer: NSObject, MTKViewDelegate{
         
         let vertexDescriptor = MTLVertexDescriptor()
         var offset: Int = 0
-        // Position
-        vertexDescriptor.attributes[0].format = .float3
+        // Position 2D
+        vertexDescriptor.attributes[0].format = .float2
         vertexDescriptor.attributes[0].offset = offset
         vertexDescriptor.attributes[0].bufferIndex = 0
-        offset += MemoryLayout<simd_float3>.stride
+        offset += MemoryLayout<simd_float2>.stride
         // Texture Coordinate
         vertexDescriptor.attributes[1].format = .float2
         vertexDescriptor.attributes[1].offset = offset
@@ -111,12 +116,16 @@ class Renderer: NSObject, MTKViewDelegate{
         
         renderEncoder?.setRenderPipelineState(pipeline)
         
-        let vertices: [simd_float2] = [
-            [-1.0, -1.0], [ 1.0, -1.0], [ 1.0,  1.0],
-            [ 1.0,  1.0], [-1.0,  1.0], [-1.0, -1.0]
+        let vertices: [Vertex] = [
+            Vertex(position: [-1.0, -1.0], texCoord: [0.0, 1.0]),
+            Vertex(position: [ 1.0, -1.0], texCoord: [1.0, 1.0]),
+            Vertex(position: [ 1.0,  1.0], texCoord: [1.0, 0.0]),
+            Vertex(position: [ 1.0,  1.0], texCoord: [1.0, 0.0]),
+            Vertex(position: [-1.0,  1.0], texCoord: [0.0, 0.0]),
+            Vertex(position: [-1.0, -1.0], texCoord: [0.0, 1.0])
         ]
         let vertexBuffer = device.makeBuffer(bytes: vertices,
-                                             length: vertices.count * MemoryLayout<simd_float2>.stride)
+                                             length: vertices.count * MemoryLayout<Vertex>.stride)
         
         renderEncoder?.setCullMode(.none)
         renderEncoder?.setFragmentSamplerState(sampler, index: 0)

@@ -10,7 +10,7 @@ using namespace metal;
 
 struct VertexIn
 {
-    float3 position [[attribute(0)]];
+    float2 position [[attribute(0)]];
     float2 texCoord [[attribute(1)]];
 };
 
@@ -23,7 +23,7 @@ struct Fragment
 vertex Fragment vertexShader(const VertexIn vertex_in [[stage_in]])
 {
     Fragment frag;
-    frag.position = float4(vertex_in.position, 1.0);
+    frag.position = float4(vertex_in.position, 0.0, 1.0);
     frag.texCoord = vertex_in.texCoord;
     return frag;
 }
