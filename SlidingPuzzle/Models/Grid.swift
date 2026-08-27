@@ -58,27 +58,44 @@ class Grid: ObservableObject {
         
         for i in 1...gridSize {
             for j in 1...gridSize {
+                
+                let topLeft = simd_float2(Float(i-1), Float(j-1)) / Float(gridSize)
+                let topRight = simd_float2(Float(i), Float(j-1)) / Float(gridSize)
+                let bottomLeft = simd_float2(Float(i-1), Float(j)) / Float(gridSize)
+                let bottomRight = simd_float2(Float(i), Float(j)) / Float(gridSize)
+                
                 // Tile Position
-                let screenQuad: Quad = Quad(topLeft: simd_float2(x: -1 + 2 * Float(i-1) / Float(gridSize),
-                                                                 y: -1 + 2 * Float(j) / Float(gridSize)),
-                                            topRight: simd_float2(x: -1 + 2 * Float(i) / Float(gridSize),
-                                                                  y: -1 + 2 * Float(j) / Float(gridSize)),
-                                            bottomLeft: simd_float2(x: -1 + 2 * Float(i-1) / Float(gridSize),
-                                                                    y: -1 + 2 * Float(j-1) / Float(gridSize)),
-                                            bottomRight: simd_float2(x: -1 + 2 * Float(i) / Float(gridSize),
-                                                                     y: -1 + 2 * Float(j-1) / Float(gridSize)))
+                let screenQuad: Quad = Quad(topLeft: simd_float2(x: -1 + 2 * topLeft.x,
+                                                                 y:  1 - 2 * topLeft.y),
+                                            topRight: simd_float2(x: -1 + 2 * topRight.x,
+                                                                  y:  1 - 2 * topRight.y),
+                                            bottomLeft: simd_float2(x: -1 + 2 * bottomLeft.x,
+                                                                    y:  1 - 2 * bottomLeft.y),
+                                            bottomRight: simd_float2(x: -1 + 2 * bottomRight.x,
+                                                                     y:  1 - 2 * bottomRight.y))
                 // Tile TexCoords
-                let textureQuad: Quad = Quad(topLeft: simd_float2(x: Float(i-1) / Float(gridSize),
-                                                                  y: Float(j) / Float(gridSize)),
-                                             topRight: simd_float2(x: Float(i) / Float(gridSize),
-                                                                   y: Float(j) / Float(gridSize)),
-                                             bottomLeft: simd_float2(x: Float(i-1) / Float(gridSize),
-                                                                     y: Float(j-1) / Float(gridSize)),
-                                             bottomRight: simd_float2(x: Float(i) / Float(gridSize),
-                                                                      y: Float(j-1) / Float(gridSize)))
+                let textureQuad: Quad = Quad(topLeft: topLeft,
+                                             topRight: topRight,
+                                             bottomLeft: bottomLeft,
+                                             bottomRight: bottomRight)
                 
                 tiles.append(Tile(device: device, screenQuad: screenQuad, textureQuad: textureQuad))
+                print("------------------------")
+                print("Screen Quad")
+                print(" TopLeft: \(screenQuad.data[4])")
+                print(" TopRight: \(screenQuad.data[3])")
+                print(" BottomLeft: \(screenQuad.data[0])")
+                print(" BottomRight: \(screenQuad.data[1])")
+                print("")
+                print("Texture Quad")
+                print(" TopLeft: \(textureQuad.data[4])")
+                print(" TopRight: \(textureQuad.data[3])")
+                print(" BottomLeft: \(textureQuad.data[0])")
+                print(" BottomRight: \(textureQuad.data[1])")
+                print("------------------------")
+                print("")
             }
+            print("")
         }
     }
 }

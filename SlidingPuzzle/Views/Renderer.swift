@@ -102,6 +102,12 @@ class Renderer: NSObject, MTKViewDelegate{
         
         let renderEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor!)
         
+        renderEncoder?.setRenderPipelineState(pipeline)
+        renderEncoder?.setCullMode(.none)
+        renderEncoder?.setFragmentSamplerState(sampler, index: 0)
+        renderEncoder?.setFragmentTexture(puzzle.texture, index: 0)
+        
+        drawBackground(renderEncoder: renderEncoder)
         drawTiles(renderEncoder: renderEncoder)
         
         renderEncoder?.endEncoding()
@@ -110,34 +116,66 @@ class Renderer: NSObject, MTKViewDelegate{
         commandBuffer?.commit()
     }
     
-    func drawTiles(renderEncoder: MTLRenderCommandEncoder?) {
-        
-        renderEncoder?.setRenderPipelineState(pipeline)
+    func drawBackground(renderEncoder: MTLRenderCommandEncoder?) {
         
         let vertices: [Vertex] = [
-            Vertex(position: [-1.0, -1.0, 0.0], texCoord: [0.0, 1.0]),
-            Vertex(position: [ 1.0, -1.0, 0.0], texCoord: [1.0, 1.0]),
-            Vertex(position: [ 1.0,  1.0, 0.0], texCoord: [1.0, 0.0]),
-            Vertex(position: [ 1.0,  1.0, 0.0], texCoord: [1.0, 0.0]),
-            Vertex(position: [-1.0,  1.0, 0.0], texCoord: [0.0, 0.0]),
-            Vertex(position: [-1.0, -1.0, 0.0], texCoord: [0.0, 1.0])
+            Vertex(position: [-1.0, -1.0, 0.5], texCoord: [0.0, 1.0]), // Bottom Left
+            Vertex(position: [ 1.0, -1.0, 0.5], texCoord: [1.0, 1.0]), // Bottom Right
+            Vertex(position: [ 1.0,  1.0, 0.5], texCoord: [1.0, 0.0]), // Top Right
+            Vertex(position: [ 1.0,  1.0, 0.5], texCoord: [1.0, 0.0]), // Top Right
+            Vertex(position: [-1.0,  1.0, 0.5], texCoord: [0.0, 0.0]), // Top Left
+            Vertex(position: [-1.0, -1.0, 0.5], texCoord: [0.0, 1.0])  // Bottom Left
         ]
         let vertexBuffer = device.makeBuffer(bytes: vertices,
                                              length: vertices.count * MemoryLayout<Vertex>.stride)
-        
-        renderEncoder?.setCullMode(.none)
-        renderEncoder?.setFragmentSamplerState(sampler, index: 0)
-        renderEncoder?.setFragmentTexture(puzzle.texture, index: 0)
         renderEncoder?.setVertexBuffer(vertexBuffer,
                                        offset: 0,
                                        index: 0)
         
-        var tint: simd_float3 = [0.5, 0.5, 0.5]
+        var tint: simd_float3 = simd_float3(repeating: 0.5)
         renderEncoder?.setFragmentBytes(&tint,
                                         length: MemoryLayout<simd_float3>.stride,
                                         index: 0)
+        
         renderEncoder?.drawPrimitives(type: .triangle,
                                       vertexStart: 0,
                                       vertexCount: vertices.count)
+    }
+    
+    func drawTiles(renderEncoder: MTLRenderCommandEncoder?) {
+        
+        var tint: simd_float3 = simd_float3(repeating: 1.0)
+        renderEncoder?.setFragmentBytes(&tint,
+                                        length: MemoryLayout<simd_float3>.stride,
+                                        index: 0)
+        
+        for tile in puzzle.tiles {
+            let offset = simd_float2(0.0, 0.0)
+            let vertices: [Vertex] = [
+                Vertex(position: simd_float3(tile.screenQuad.data[0], 0),
+                       texCoord: tile.textureQuad.data[0] + offset),
+                Vertex(position: simd_float3(tile.screenQuad.data[1], 0),
+                       texCoord: tile.textureQuad.data[1] + offset),
+                Vertex(position: simd_float3(tile.screenQuad.data[2], 0),
+                       texCoord: tile.textureQuad.data[2] + offset),
+                Vertex(position: simd_float3(tile.screenQuad.data[3], 0),
+                       texCoord: tile.textureQuad.data[3] + offset),
+                Vertex(position: simd_float3(tile.screenQuad.data[4], 0),
+                       texCoord: tile.textureQuad.data[4] + offset),
+                Vertex(position: simd_float3(tile.screenQuad.data[5], 0),
+                       texCoord: tile.textureQuad.data[5] + offset)
+            ]
+            
+            let vertexBuffer = device.makeBuffer(bytes: vertices,
+                                                 length: vertices.count * MemoryLayout<Vertex>.stride)
+            renderEncoder?.setVertexBuffer(vertexBuffer,
+                                           offset: 0,
+                                           index: 0)
+            
+            renderEncoder?.drawPrimitives(type: .triangle,
+                                          vertexStart: 0,
+                                          vertexCount: 6)
+            break
+        }
     }
 }
