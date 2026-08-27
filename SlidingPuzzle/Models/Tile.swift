@@ -24,16 +24,14 @@ class Tile {
     
     let screenQuad: Quad
     let textureQuad: Quad
-    let vertexBuffer: MTLBuffer?
-    let vertexCount: Int
+    
+    var isActive: Bool
     
     init(device: MTLDevice, screenQuad: Quad, textureQuad: Quad) {
         self.screenQuad = screenQuad
         self.textureQuad = textureQuad
+        self.isActive = true
         
         let data = textureQuad.data
-        self.vertexBuffer = device.makeBuffer(bytes: data,
-                                              length: data.count * MemoryLayout<simd_float2>.stride)
-        self.vertexCount = data.count
     }
 }

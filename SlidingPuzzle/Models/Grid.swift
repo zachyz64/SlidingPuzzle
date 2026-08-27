@@ -11,7 +11,7 @@ internal import Combine
 
 class Grid: ObservableObject {
     
-    let gridSize: Int = 2
+    let gridSize: Int = 4
     
     var texture: MTLTexture?
     var tiles: [Tile]
@@ -80,6 +80,11 @@ class Grid: ObservableObject {
                                              bottomRight: bottomRight)
                 
                 tiles.append(Tile(device: device, screenQuad: screenQuad, textureQuad: textureQuad))
+
+                if (i == gridSize && j == gridSize) {
+                    tiles.last?.isActive = false
+                }
+
                 print("------------------------")
                 print("Screen Quad")
                 print(" TopLeft: \(screenQuad.data[4])")
