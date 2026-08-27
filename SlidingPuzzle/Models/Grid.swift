@@ -51,7 +51,7 @@ class Grid: ObservableObject {
         createTiles(device)
     }
     
-    func loadTexture(device: MTLDevice, _ filename: String, _ filenameExtension: String) -> MTLTexture {
+    private func loadTexture(device: MTLDevice, _ filename: String, _ filenameExtension: String) -> MTLTexture {
         
         guard let textureURL = Bundle.main.url(forResource: filename, withExtension: filenameExtension) else {
             fatalError("Failed to find image \(filename).\(filenameExtension)")
@@ -72,7 +72,7 @@ class Grid: ObservableObject {
         return newTexture!
     }
     
-    func createTiles(_ device: MTLDevice) {
+    private func createTiles(_ device: MTLDevice) {
         
         for i in 1...gridSize {
             for j in 1...gridSize {
@@ -100,8 +100,8 @@ class Grid: ObservableObject {
                 tiles.append(Tile(device: device, screenQuad: screenQuad, textureQuad: textureQuad))
 
                 if (i == gridSize && j == gridSize) {
-                    //tiles.last?.isActive = false
                     tiles[i*j-1].isActive = false
+                    freeSpaceAddress = i*j-1
                 }
 
                 print("------------------------")
@@ -123,8 +123,37 @@ class Grid: ObservableObject {
         }
     }
     
-    func onTileWasSelected(location: CGPoint) {
-        print ("Location: \(location)")
+    func onTileWasSelected(location: CGPoint, dimension: CGFloat) {
+        
+        if slideInProgress { return }
+        
+        let locationNDC: simd_float2 = simd_float2(Float(location.x), Float(location.y)) / Float(dimension)
+        print("LocationNDC: \(locationNDC)")
+        
+        let selectedTileAddress: Int = getGridAddress(location: locationNDC)
+        if canTileSlide(selectedTileAddress) {
+            getTilesToSlide(selectedTileAddress)
+            slideTiles()
+        }
+        
+    }
+    
+    private func canTileSlide(_ address: Int) -> Bool {
+        
+        return false
+    }
+    
+    private func getTilesToSlide(_ address: Int) {
+        
+    }
+    
+    private func slideTiles() {
+        
+    }
+    
+    private func getGridAddress(location: simd_float2) -> Int {
+        
+        return 0
     }
     
     func reset() {
