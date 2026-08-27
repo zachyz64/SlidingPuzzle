@@ -8,13 +8,16 @@
 import SwiftUI
 
 struct GameView: View {
+    
+    @EnvironmentObject var grid: Grid
+    
     var body: some View {
         VStack {
             /*
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+             Image(systemName: "globe")
+             .imageScale(.large)
+             .foregroundStyle(.tint)
+             Text("Hello, world!")
              */
             Text("Sliding Puzzle")
                 .bold()
@@ -22,27 +25,23 @@ struct GameView: View {
             PuzzleView()
                 .frame(width: 600, height: 600)
             HStack {
-                Button {
-                    print("Hide Tiles")
-                } label: {
-                    Text("Hide Tiles")
-                        .font(.system(size: 32))
-                        .foregroundColor(.white)
-                        .background(.blue)
-                        .clipShape(Capsule())
+                
+                Button(action: { grid.showTiles = !grid.showTiles }) {
+                    Text(grid.showTiles ? "Hide Tiles" : "Show Tiles")
+                        .font(.headline)
+                        .frame(width: 90, height: 25, alignment: .center)
                 }.buttonStyle(.borderedProminent)
-                Button {
-                    print("Reset")
-                } label: {
+                
+                Button(action: { grid.reset() }) {
                     Text("Reset")
-                        .font(.system(size: 32))
+                        .font(.headline)
+                        .frame(width: 50, height: 25, alignment: .center)
                         .foregroundColor(.white)
                         .background(.blue)
-                        .clipShape(Capsule())
                 }.buttonStyle(.borderedProminent)
             }
+            .padding()
         }
-        .padding()
     }
 }
 

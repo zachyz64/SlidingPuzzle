@@ -10,8 +10,10 @@ import MetalKit
 
 struct PuzzleView : UIViewRepresentable {
     
+    @EnvironmentObject var grid: Grid
+    
     func makeCoordinator() -> Renderer {
-        Renderer(self)
+        Renderer(self, grid)
     }
     
     func makeUIView(context: UIViewRepresentableContext<PuzzleView>) ->  MTKView {

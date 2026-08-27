@@ -29,7 +29,7 @@ class Renderer: NSObject, MTKViewDelegate{
 
     let puzzle: Grid
     
-    init (_ parent: PuzzleView) {
+    init (_ parent: PuzzleView, _ grid: Grid) {
         self.parent = parent
         
         if let mtkDevice = MTLCreateSystemDefaultDevice() {
@@ -53,7 +53,8 @@ class Renderer: NSObject, MTKViewDelegate{
         
         vertexDescriptor.layouts[bufferIndex].stride = MemoryLayout<Vertex>.stride
         
-        self.puzzle = Grid(device: device, filename: "Exusiai", filenameExtension: "jpg")
+        self.puzzle = grid
+        self.puzzle.update(device: device, filename: "Exusiai", filenameExtension: "jpg")
         
         let library = device.makeDefaultLibrary()!
         
@@ -108,7 +109,9 @@ class Renderer: NSObject, MTKViewDelegate{
         renderEncoder?.setFragmentTexture(puzzle.texture, index: 0)
         
         drawBackground(renderEncoder: renderEncoder)
-        drawTiles(renderEncoder: renderEncoder)
+        if puzzle.showTiles {
+            drawTiles(renderEncoder: renderEncoder)
+        }
         
         renderEncoder?.endEncoding()
         

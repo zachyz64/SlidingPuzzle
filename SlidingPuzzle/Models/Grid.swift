@@ -22,6 +22,18 @@ class Grid: ObservableObject {
     @Published var slideInProgress: Bool
     @Published var slideDistance: Float
     
+    @Published var showTiles: Bool
+    
+    init() {
+        self.tiles = []
+        self.tilesToSlide = []
+        self.freeSpaceAddress = 0
+        self.cachedTileAddress = 0
+        self.slideInProgress = false
+        self.slideDistance = 0.0
+        self.showTiles = true
+    }
+    
     init(device: MTLDevice, filename: String, filenameExtension: String) {
         self.tiles = []
         self.tilesToSlide = []
@@ -29,10 +41,16 @@ class Grid: ObservableObject {
         self.cachedTileAddress = 0
         self.slideInProgress = false
         self.slideDistance = 0.0
+        self.showTiles = true
         self.texture = loadTexture(device: device, filename, filenameExtension)
         createTiles(device)
     }
-        
+    
+    func update(device: MTLDevice, filename: String, filenameExtension: String) {
+        self.texture = loadTexture(device: device, filename, filenameExtension)
+        createTiles(device)
+    }
+    
     func loadTexture(device: MTLDevice, _ filename: String, _ filenameExtension: String) -> MTLTexture {
         
         guard let textureURL = Bundle.main.url(forResource: filename, withExtension: filenameExtension) else {
@@ -102,5 +120,9 @@ class Grid: ObservableObject {
             }
             print("")
         }
+    }
+    
+    func reset() {
+        print("Reset puzzle")
     }
 }
