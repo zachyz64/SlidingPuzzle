@@ -160,17 +160,17 @@ class Renderer: NSObject, MTKViewDelegate{
             let offset = simd_float2(0.0, 0.0)
             let vertices: [Vertex] = [
                 Vertex(position: simd_float3(tile.screenQuad.data[0], 0), // Bottom Left
-                       texCoord: tile.textureQuad.data[0] + offset),
+                       texCoord: tile.textureQuad.data[0] - offset),
                 Vertex(position: simd_float3(tile.screenQuad.data[1], 0), // Bottom Right
-                       texCoord: tile.textureQuad.data[1] + offset),
+                       texCoord: tile.textureQuad.data[1] - offset),
                 Vertex(position: simd_float3(tile.screenQuad.data[2], 0), // Top Right
-                       texCoord: tile.textureQuad.data[2] + offset),
+                       texCoord: tile.textureQuad.data[2] - offset),
                 Vertex(position: simd_float3(tile.screenQuad.data[3], 0), // Top Right
-                       texCoord: tile.textureQuad.data[3] + offset),
+                       texCoord: tile.textureQuad.data[3] - offset),
                 Vertex(position: simd_float3(tile.screenQuad.data[4], 0), // Top Left
-                       texCoord: tile.textureQuad.data[4] + offset),
+                       texCoord: tile.textureQuad.data[4] - offset),
                 Vertex(position: simd_float3(tile.screenQuad.data[5], 0), // Bottom Left
-                       texCoord: tile.textureQuad.data[5] + offset)
+                       texCoord: tile.textureQuad.data[5] - offset)
             ]
             
             let vertexBuffer = device.makeBuffer(bytes: vertices,

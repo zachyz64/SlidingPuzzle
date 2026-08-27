@@ -77,10 +77,10 @@ class Grid: ObservableObject {
         for i in 1...gridSize {
             for j in 1...gridSize {
                 
-                let topLeft = simd_float2(Float(i-1), Float(j-1)) / Float(gridSize)
-                let topRight = simd_float2(Float(i), Float(j-1)) / Float(gridSize)
-                let bottomLeft = simd_float2(Float(i-1), Float(j)) / Float(gridSize)
-                let bottomRight = simd_float2(Float(i), Float(j)) / Float(gridSize)
+                let topLeft = simd_float2(Float(j-1), Float(i-1)) / Float(gridSize)
+                let topRight = simd_float2(Float(j), Float(i-1)) / Float(gridSize)
+                let bottomLeft = simd_float2(Float(j-1), Float(i)) / Float(gridSize)
+                let bottomRight = simd_float2(Float(j), Float(i)) / Float(gridSize)
                 
                 // Tile Position
                 let screenQuad: Quad = Quad(topLeft: simd_float2(x: -1 + 2 * topLeft.x,
@@ -100,7 +100,8 @@ class Grid: ObservableObject {
                 tiles.append(Tile(device: device, screenQuad: screenQuad, textureQuad: textureQuad))
 
                 if (i == gridSize && j == gridSize) {
-                    tiles.last?.isActive = false
+                    //tiles.last?.isActive = false
+                    tiles[i*j-1].isActive = false
                 }
 
                 print("------------------------")
@@ -120,6 +121,10 @@ class Grid: ObservableObject {
             }
             print("")
         }
+    }
+    
+    func onTileWasSelected(location: CGPoint) {
+        print ("Location: \(location)")
     }
     
     func reset() {

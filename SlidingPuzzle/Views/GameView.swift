@@ -9,6 +9,8 @@ import SwiftUI
 
 struct GameView: View {
     
+    let gridSize: CGFloat = 600
+    
     @EnvironmentObject var grid: Grid
     
     var body: some View {
@@ -23,10 +25,13 @@ struct GameView: View {
                 .bold()
                 .italic()
             PuzzleView()
-                .frame(width: 600, height: 600)
+                .frame(width: gridSize, height: gridSize)
+                .onTapGesture(coordinateSpace: .local) { location in
+                    grid.onTileWasSelected(location: location)
+                }
             HStack {
                 
-                Button(action: { grid.showTiles = !grid.showTiles }) {
+                Button(action: { grid.showTiles.toggle() }) {
                     Text(grid.showTiles ? "Hide Tiles" : "Show Tiles")
                         .font(.headline)
                         .frame(width: 90, height: 25, alignment: .center)
