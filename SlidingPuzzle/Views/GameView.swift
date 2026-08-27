@@ -10,11 +10,15 @@ import SwiftUI
 struct GameView: View {
     var body: some View {
         VStack {
+            /*
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
             Text("Hello, world!")
+             */
             Text("Sliding Puzzle")
+                .bold()
+                .italic()
             PuzzleView()
                 .frame(width: 600, height: 600)
         }

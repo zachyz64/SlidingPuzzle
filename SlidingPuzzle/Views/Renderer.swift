@@ -9,7 +9,7 @@ import Foundation
 import MetalKit
 
 struct Vertex {
-    let position: simd_float2
+    let position: simd_float3
     let texCoord: simd_float2
 }
 
@@ -40,20 +40,18 @@ class Renderer: NSObject, MTKViewDelegate{
         self.materialLoader = MTKTextureLoader(device: device)
         self.meshAllocator = MTKMeshBufferAllocator(device: device)
         
+        let bufferIndex = 0
         let vertexDescriptor = MTLVertexDescriptor()
-        var offset: Int = 0
         // Position 2D
-        vertexDescriptor.attributes[0].format = .float2
-        vertexDescriptor.attributes[0].offset = offset
-        vertexDescriptor.attributes[0].bufferIndex = 0
-        offset += MemoryLayout<simd_float2>.stride
+        vertexDescriptor.attributes[0].format = .float3
+        vertexDescriptor.attributes[0].offset = 0
+        vertexDescriptor.attributes[0].bufferIndex = bufferIndex
         // Texture Coordinate
         vertexDescriptor.attributes[1].format = .float2
-        vertexDescriptor.attributes[1].offset = offset
-        vertexDescriptor.attributes[1].bufferIndex = 0
-        offset += MemoryLayout<simd_float2>.stride
+        vertexDescriptor.attributes[1].offset = MemoryLayout.offset(of: \Vertex.texCoord)!
+        vertexDescriptor.attributes[1].bufferIndex = bufferIndex
         
-        vertexDescriptor.layouts[0].stride = offset
+        vertexDescriptor.layouts[bufferIndex].stride = MemoryLayout<Vertex>.stride
         
         self.puzzle = Grid(device: device, filename: "Exusiai", filenameExtension: "jpg")
         
@@ -117,12 +115,12 @@ class Renderer: NSObject, MTKViewDelegate{
         renderEncoder?.setRenderPipelineState(pipeline)
         
         let vertices: [Vertex] = [
-            Vertex(position: [-1.0, -1.0], texCoord: [0.0, 1.0]),
-            Vertex(position: [ 1.0, -1.0], texCoord: [1.0, 1.0]),
-            Vertex(position: [ 1.0,  1.0], texCoord: [1.0, 0.0]),
-            Vertex(position: [ 1.0,  1.0], texCoord: [1.0, 0.0]),
-            Vertex(position: [-1.0,  1.0], texCoord: [0.0, 0.0]),
-            Vertex(position: [-1.0, -1.0], texCoord: [0.0, 1.0])
+            Vertex(position: [-1.0, -1.0, 0.0], texCoord: [0.0, 1.0]),
+            Vertex(position: [ 1.0, -1.0, 0.0], texCoord: [1.0, 1.0]),
+            Vertex(position: [ 1.0,  1.0, 0.0], texCoord: [1.0, 0.0]),
+            Vertex(position: [ 1.0,  1.0, 0.0], texCoord: [1.0, 0.0]),
+            Vertex(position: [-1.0,  1.0, 0.0], texCoord: [0.0, 0.0]),
+            Vertex(position: [-1.0, -1.0, 0.0], texCoord: [0.0, 1.0])
         ]
         let vertexBuffer = device.makeBuffer(bytes: vertices,
                                              length: vertices.count * MemoryLayout<Vertex>.stride)
