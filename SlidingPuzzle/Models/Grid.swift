@@ -11,7 +11,7 @@ internal import Combine
 
 class Grid: ObservableObject {
     
-    let gridSize: Int = 4
+    let gridSize: Int = 2
     
     var texture: MTLTexture?
     var tiles: [Tile]
