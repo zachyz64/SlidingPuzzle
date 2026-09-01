@@ -22,22 +22,25 @@ struct Quad {
 
 class Tile {
     
-    let screenQuad: Quad
+    var screenQuad: Quad
     let textureQuad: Quad
     
     var isActive: Bool
-    var gridAddress: Int
-    var correctAddress: Int
+    var gridAddress: Int = 0
+    var correctAddress: Int = 0
     var location: simd_float2
     
-    init(device: MTLDevice, screenQuad: Quad, textureQuad: Quad) {
+    init(screenQuad: Quad, textureQuad: Quad, gridSize: Int) {
         self.screenQuad = screenQuad
         self.textureQuad = textureQuad
         self.isActive = true
-        self.gridAddress = 0
-        self.correctAddress = 0
         self.location = screenQuad.data[0]
+        self.gridAddress = calculateAddress(screenQuad, gridSize)
+        self.correctAddress = calculateAddress(textureQuad, gridSize)
+    }
+    
+    private func calculateAddress(_ quad: Quad, _ gridSize: Int) -> Int {
         
-        let data = textureQuad.data
+        return 0
     }
 }

@@ -54,12 +54,12 @@ class Grid: ObservableObject {
         self.slideDistance = 0.0
         self.showTiles = true
         self.texture = loadTexture(device: device, filename, filenameExtension)
-        createTiles(device)
+        createTiles()
     }
     
     func update(device: MTLDevice, filename: String, filenameExtension: String) {
         self.texture = loadTexture(device: device, filename, filenameExtension)
-        createTiles(device)
+        createTiles()
     }
     
     private func loadTexture(device: MTLDevice, _ filename: String, _ filenameExtension: String) -> MTLTexture {
@@ -83,7 +83,7 @@ class Grid: ObservableObject {
         return newTexture!
     }
     
-    private func createTiles(_ device: MTLDevice) {
+    private func createTiles() {
         
         for i in 1...gridSize {
             for j in 1...gridSize {
@@ -108,7 +108,7 @@ class Grid: ObservableObject {
                                              bottomLeft: bottomLeft,
                                              bottomRight: bottomRight)
                 
-                tiles.append(Tile(device: device, screenQuad: screenQuad, textureQuad: textureQuad))
+                tiles.append(Tile(screenQuad: screenQuad, textureQuad: textureQuad, gridSize: gridSize))
 
                 if (i == gridSize && j == gridSize) {
                     tiles.last?.isActive = false
