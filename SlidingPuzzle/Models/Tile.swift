@@ -35,12 +35,15 @@ class Tile {
         self.textureQuad = textureQuad
         self.isActive = true
         self.location = screenQuad.data[0]
-        self.gridAddress = calculateAddress(screenQuad, gridSize)
-        self.correctAddress = calculateAddress(textureQuad, gridSize)
-    }
-    
-    private func calculateAddress(_ quad: Quad, _ gridSize: Int) -> Int {
         
-        return 0
+        let row = Int(((1 + screenQuad.data[4].x) / 2 * Float(gridSize)).rounded())
+        let col = gridSize - Int(((1 + screenQuad.data[4].y) / 2 * Float(gridSize)).rounded())
+        self.gridAddress = row + col * gridSize
+        
+        let correctRow = Int(textureQuad.data[4].x * Float(gridSize))
+        let correctCol = Int(textureQuad.data[4].y * Float(gridSize))
+        self.correctAddress = correctRow + correctCol * gridSize
+        
+        print("Grid Address: \(self.gridAddress), Correct Address: \(self.correctAddress)")
     }
 }
