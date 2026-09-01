@@ -38,11 +38,11 @@ class Tile {
         
         let row = Int(((1 + screenQuad.data[4].x) / 2 * Float(gridSize)).rounded())
         let col = gridSize - Int(((1 + screenQuad.data[4].y) / 2 * Float(gridSize)).rounded())
-        self.gridAddress = row + col * gridSize
+        self.gridAddress = row * gridSize + col
         
         let correctRow = Int(textureQuad.data[4].x * Float(gridSize))
         let correctCol = Int(textureQuad.data[4].y * Float(gridSize))
-        self.correctAddress = correctRow + correctCol * gridSize
+        self.correctAddress = correctRow * gridSize + correctCol
         
         print("Grid Address: \(self.gridAddress), Correct Address: \(self.correctAddress)")
     }

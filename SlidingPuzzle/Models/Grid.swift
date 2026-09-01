@@ -22,7 +22,7 @@ class Grid: ObservableObject {
     var tiles: [Tile]
     
     @Published var tilesToSlide: [Tile]
-    @Published var freeSpaceAddress: Int
+    var freeSpaceAddress: Int
     @Published var cachedTileAddress: Int
     @Published var slideInProgress: Bool
     @Published var slideDistance: Float
@@ -112,7 +112,7 @@ class Grid: ObservableObject {
 
                 if (i == gridSize && j == gridSize) {
                     tiles.last?.isActive = false
-                    //freeSpaceAddress = i*j-1
+                    freeSpaceAddress = i*j-1
                 }
                 
                 if (i + j) % 2 == 0 {
@@ -159,10 +159,10 @@ class Grid: ObservableObject {
     private func canTileSlide(_ address: Int) -> Bool {
         
         if address >= 0 && address < gridSize * gridSize {
-            let freeSpaceRow = freeSpaceAddress % gridSize
-            let freeSpaceCol = freeSpaceAddress / gridSize
-            let tileRow = address % gridSize
-            let tileCol = address / gridSize
+            let freeSpaceRow = freeSpaceAddress / gridSize
+            let freeSpaceCol = freeSpaceAddress % gridSize
+            let tileRow = address / gridSize
+            let tileCol = address % gridSize
             
             if tileRow == freeSpaceRow || tileCol == freeSpaceCol {
                 return true
@@ -172,10 +172,10 @@ class Grid: ObservableObject {
     }
     
     private func getTilesToSlide(_ address: Int) {
-        let freeSpaceRow = freeSpaceAddress % gridSize
-        let freeSpaceCol = freeSpaceAddress / gridSize
-        let tileRow = address % gridSize
-        let tileCol = address / gridSize
+        let freeSpaceRow = freeSpaceAddress / gridSize
+        let freeSpaceCol = freeSpaceAddress % gridSize
+        let tileRow = address / gridSize
+        let tileCol = address % gridSize
         
         if tileRow == freeSpaceRow {
             
@@ -260,8 +260,9 @@ class Grid: ObservableObject {
     }
     
     private func getGridAddress(location: simd_float2) -> Int {
-        
-        return 0
+        let row = Int(location.x * Float(gridSize))
+        let col = Int(location.y * Float(gridSize))
+        return row * gridSize + col
     }
     
     private func getLocationFromGridAddress(_ address: Int) -> simd_float2 {
