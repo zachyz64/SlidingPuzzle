@@ -26,11 +26,17 @@ class Tile {
     let textureQuad: Quad
     
     var isActive: Bool
+    var gridAddress: Int
+    var correctAddress: Int
+    var location: simd_float2
     
     init(device: MTLDevice, screenQuad: Quad, textureQuad: Quad) {
         self.screenQuad = screenQuad
         self.textureQuad = textureQuad
         self.isActive = true
+        self.gridAddress = 0
+        self.correctAddress = 0
+        self.location = screenQuad.data[0]
         
         let data = textureQuad.data
     }

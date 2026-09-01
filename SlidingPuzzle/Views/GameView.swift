@@ -46,6 +46,10 @@ struct GameView: View {
                 }.buttonStyle(.borderedProminent)
             }
             .padding()
+            
+            HStack {
+                Text("Moves: ")
+            }
         }
     }
 }
