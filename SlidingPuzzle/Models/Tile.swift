@@ -46,10 +46,10 @@ class Tile {
     }
     
     func updateScreenQuad(location: simd_float2) {
-        
+        let delta = screenQuad.data[1].x - screenQuad.data[0].x
         screenQuad = Quad(topLeft: location,
-                          topRight: location + simd_float2(x: 0.4, y: 0.0),
-                          bottomLeft: location + simd_float2(x: 0.0, y: -0.4 ),
-                          bottomRight: location + simd_float2(x: 0.4, y: -0.4))
+                          topRight: location + simd_float2(x: delta, y: 0.0),
+                          bottomLeft: location + simd_float2(x: 0.0, y: -delta ),
+                          bottomRight: location + simd_float2(x: delta, y: -delta))
     }
 }

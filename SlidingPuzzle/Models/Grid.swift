@@ -11,8 +11,8 @@ internal import Combine
 
 class Grid: ObservableObject {
     
-    private let gridSize: Int = 5
-    private let timerRate: Float = 0.02
+    private let gridSize: Int = 4
+    private let timerRate: Float = 0.04
     private let moveSpeed: Float = 2.0
     private let tileSize: Float
     
@@ -20,44 +20,33 @@ class Grid: ObservableObject {
     
     var texture: MTLTexture?
     var tiles: [Tile]
+    var tilesToSlide: [Tile]
+    var freeSpaceAddress: Int
+    var cachedTileAddress: Int
+    var slideInProgress: Bool = false
+    var slideDistance: Float = 0.0
     
     @Published var moves: Int
-    @Published var tilesToSlide: [Tile]
-    var freeSpaceAddress: Int
-    @Published var cachedTileAddress: Int
-    @Published var slideInProgress: Bool
-    @Published var slideDistance: Float
-    
-    @Published var showTiles: Bool
+    @Published var showTiles: Bool = true
     
     init() {
         self.tileSize = 2.0 / Float(gridSize)
         self.slideTimer = Timer()
-        
         self.tiles = []
-        
         self.moves = 0
         self.tilesToSlide = []
-        self.freeSpaceAddress = gridSize * gridSize - 2
+        self.freeSpaceAddress = gridSize * gridSize - 1
         self.cachedTileAddress = 0
-        self.slideInProgress = false
-        self.slideDistance = 0.0
-        self.showTiles = true
     }
     
     init(device: MTLDevice, filename: String, filenameExtension: String) {
         self.tileSize = 2.0 / Float(gridSize)
         self.slideTimer = Timer()
-
         self.tiles = []
-        
         self.moves = 0
         self.tilesToSlide = []
         self.freeSpaceAddress = gridSize * gridSize - 1
         self.cachedTileAddress = 0
-        self.slideInProgress = false
-        self.slideDistance = 0.0
-        self.showTiles = true
         self.texture = loadTexture(device: device, filename, filenameExtension)
         createTiles()
     }
@@ -119,12 +108,6 @@ class Grid: ObservableObject {
                     tiles.last?.isActive = false
                     freeSpaceAddress = i*j-1
                 }
-                /*
-                if (i + j) % 2 == 0 {
-                    tiles.last?.isActive = false
-                    //freeSpaceAddress = i*j-1
-                }
-                 */
                 
                 print("------------------------")
                 print("Screen Quad")
@@ -147,7 +130,7 @@ class Grid: ObservableObject {
     
     func onTileWasSelected(location: CGPoint, dimension: CGFloat) {
         
-        if slideInProgress || (dimension < 0 && dimension > 600) { return }
+        if slideInProgress { return }
         
         let location = simd_float2(Float(location.x), Float(location.y)) / Float(dimension)
         
@@ -211,7 +194,7 @@ class Grid: ObservableObject {
         var directionVector = simd_normalize(getLocationFromGridAddress(freeSpaceAddress) - tilesToSlide[0].location)
         directionVector.x = directionVector.x.rounded()
         directionVector.y = directionVector.y.rounded()
-        slideTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+        slideTimer = Timer.scheduledTimer(withTimeInterval: Double(timerRate), repeats: true) { timer in
             self.doSlide(directionVector)
         }
     }
