@@ -48,7 +48,7 @@ struct GameView: View {
             .padding()
             
             HStack {
-                Text("Moves: ")
+                Text("Moves: \(grid.moves)")
             }
         }
     }

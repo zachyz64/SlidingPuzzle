@@ -34,16 +34,22 @@ class Tile {
         self.screenQuad = screenQuad
         self.textureQuad = textureQuad
         self.isActive = true
-        self.location = screenQuad.data[0]
+        self.location = screenQuad.data[4]
         
-        let row = Int(((1 + screenQuad.data[4].x) / 2 * Float(gridSize)).rounded())
-        let col = gridSize - Int(((1 + screenQuad.data[4].y) / 2 * Float(gridSize)).rounded())
+        let row = gridSize - Int(((1 + screenQuad.data[4].y) / 2 * Float(gridSize)).rounded())
+        let col = Int(((1 + screenQuad.data[4].x) / 2 * Float(gridSize)).rounded())
         self.gridAddress = row * gridSize + col
         
-        let correctRow = Int(textureQuad.data[4].x * Float(gridSize))
-        let correctCol = Int(textureQuad.data[4].y * Float(gridSize))
+        let correctRow = Int(textureQuad.data[4].y * Float(gridSize))
+        let correctCol = Int(textureQuad.data[4].x * Float(gridSize))
         self.correctAddress = correctRow * gridSize + correctCol
+    }
+    
+    func updateScreenQuad(location: simd_float2) {
         
-        print("Grid Address: \(self.gridAddress), Correct Address: \(self.correctAddress)")
+        screenQuad = Quad(topLeft: location,
+                          topRight: location + simd_float2(x: 0.4, y: 0.0),
+                          bottomLeft: location + simd_float2(x: 0.0, y: -0.4 ),
+                          bottomRight: location + simd_float2(x: 0.4, y: -0.4))
     }
 }

@@ -135,7 +135,7 @@ class Renderer: NSObject, MTKViewDelegate{
                                        offset: 0,
                                        index: 0)
         
-        var tint: simd_float3 = simd_float3(repeating: 0.25)
+        var tint: simd_float3 = simd_float3(repeating: 0.4)
         renderEncoder?.setFragmentBytes(&tint,
                                         length: MemoryLayout<simd_float3>.stride,
                                         index: 0)

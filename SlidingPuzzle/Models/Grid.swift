@@ -12,8 +12,8 @@ internal import Combine
 class Grid: ObservableObject {
     
     private let gridSize: Int = 5
-    private let timerRate: Float = 0.1
-    private let moveSpeed: Float = 1.0
+    private let timerRate: Float = 0.02
+    private let moveSpeed: Float = 2.0
     private let tileSize: Float
     
     private var slideTimer: Timer
@@ -21,6 +21,7 @@ class Grid: ObservableObject {
     var texture: MTLTexture?
     var tiles: [Tile]
     
+    @Published var moves: Int
     @Published var tilesToSlide: [Tile]
     var freeSpaceAddress: Int
     @Published var cachedTileAddress: Int
@@ -34,6 +35,8 @@ class Grid: ObservableObject {
         self.slideTimer = Timer()
         
         self.tiles = []
+        
+        self.moves = 0
         self.tilesToSlide = []
         self.freeSpaceAddress = gridSize * gridSize - 2
         self.cachedTileAddress = 0
@@ -47,6 +50,8 @@ class Grid: ObservableObject {
         self.slideTimer = Timer()
 
         self.tiles = []
+        
+        self.moves = 0
         self.tilesToSlide = []
         self.freeSpaceAddress = gridSize * gridSize - 1
         self.cachedTileAddress = 0
@@ -114,12 +119,12 @@ class Grid: ObservableObject {
                     tiles.last?.isActive = false
                     freeSpaceAddress = i*j-1
                 }
-                
+                /*
                 if (i + j) % 2 == 0 {
                     tiles.last?.isActive = false
                     //freeSpaceAddress = i*j-1
                 }
-                 
+                 */
                 
                 print("------------------------")
                 print("Screen Quad")
@@ -145,8 +150,6 @@ class Grid: ObservableObject {
         if slideInProgress || (dimension < 0 && dimension > 600) { return }
         
         let location = simd_float2(Float(location.x), Float(location.y)) / Float(dimension)
-
-        print("Location: \(location)")
         
         let selectedTileAddress: Int = getGridAddress(location: location)
         if canTileSlide(selectedTileAddress) {
@@ -157,6 +160,8 @@ class Grid: ObservableObject {
     }
     
     private func canTileSlide(_ address: Int) -> Bool {
+        
+        if address == freeSpaceAddress { return false }
         
         if address >= 0 && address < gridSize * gridSize {
             let freeSpaceRow = freeSpaceAddress / gridSize
@@ -181,49 +186,53 @@ class Grid: ObservableObject {
             
             let distance = freeSpaceCol - tileCol
             for i in 0..<abs(distance) {
-                let oldAddress = address + distance / abs(distance) * gridSize * i
-                tiles[oldAddress].gridAddress = oldAddress + distance / abs(distance) * gridSize
+                let oldAddress = address + distance / abs(distance) * i
+                tiles[oldAddress].gridAddress = oldAddress + distance / abs(distance)
                 tilesToSlide.append(tiles[oldAddress])
             }
         } else if tileCol == freeSpaceCol {
             
             let distance = freeSpaceRow - tileRow
             for i in 0..<abs(distance) {
-                let oldAddress = address + distance / abs(distance) * i
-                tiles[oldAddress].gridAddress = oldAddress + distance / abs(distance)
+                let oldAddress = address + distance / abs(distance) * gridSize * i
+                tiles[oldAddress].gridAddress = oldAddress + distance / abs(distance) * gridSize
                 tilesToSlide.append(tiles[oldAddress])
             }
         } else {
             fatalError()
         }
-        
+        tiles[freeSpaceAddress].gridAddress = address
         cachedTileAddress = address
     }
     
     private func slideTiles() {
+        print("Slide started\n")
         slideInProgress = true
+        var directionVector = simd_normalize(getLocationFromGridAddress(freeSpaceAddress) - tilesToSlide[0].location)
+        directionVector.x = directionVector.x.rounded()
+        directionVector.y = directionVector.y.rounded()
         slideTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
-            self.doSlide()
+            self.doSlide(directionVector)
         }
     }
     
-    private func doSlide() {
+    private func doSlide(_ directionVector: simd_float2) {
         slideDistance += moveSpeed * timerRate
         let reachedDestination = slideDistance >= tileSize
-        let directionVector = simd_normalize(getLocationFromGridAddress(freeSpaceAddress) - tilesToSlide[0].location)
         
         for i in 0..<tilesToSlide.count {
             let addressDiff = freeSpaceAddress - tilesToSlide[i].gridAddress
-            let sign = addressDiff / abs(addressDiff)
-            let offset = (addressDiff % 4 == 0) ? 4 * sign * (i + 1 - tilesToSlide.count)
+            let sign = abs(addressDiff) != 0 ? addressDiff / abs(addressDiff) : 0
+            let offset = (addressDiff % gridSize == 0) ? gridSize * sign * (i + 1 - tilesToSlide.count)
                                                 : sign * (i + 1 - tilesToSlide.count)
             let newLocation = reachedDestination ?
                 getLocationFromGridAddress(freeSpaceAddress + offset) :
                 tilesToSlide[i].location + moveSpeed * timerRate * directionVector
             
             tilesToSlide[i].location = newLocation
+            tilesToSlide[i].updateScreenQuad(location: newLocation)
         }
-        
+        print("Slide Distance: \(slideDistance)\n")
         if reachedDestination {
             slideTimer.invalidate()
             onSlideFinished()
@@ -239,9 +248,10 @@ class Grid: ObservableObject {
         updateTiles()
         
         if isSolved() {
-            print("Puzzle is solved!")
+            print("Puzzle is solved!\n")
         }
-        
+        print("Slide finished\n")
+        moves += 1
     }
     
     private func updateTiles() {
@@ -250,25 +260,27 @@ class Grid: ObservableObject {
         
         for i in 0..<tiles.count {
             for tile in tiles {
-                if tile.isActive && tile.gridAddress == i {
-                    tempArray[i] = tile
+                if tile.gridAddress == i {
+                    tempArray.append(tile)
                     break
                 }
             }
         }
         tiles = tempArray
+        
+        print("Tiles updated\n")
     }
     
     private func getGridAddress(location: simd_float2) -> Int {
-        let row = Int(location.x * Float(gridSize))
-        let col = Int(location.y * Float(gridSize))
+        let row = Int(location.y * Float(gridSize))
+        let col = Int(location.x * Float(gridSize))
         return row * gridSize + col
     }
     
     private func getLocationFromGridAddress(_ address: Int) -> simd_float2 {
-        var outLocation = simd_float2(repeating: -(Float(gridSize) * 0.5) * tileSize + (tileSize * 0.5))
+        var outLocation = simd_float2(x: -1, y: 1)
         outLocation.x += tileSize * Float(address % gridSize)
-        outLocation.y += tileSize * Float(address / gridSize)
+        outLocation.y -= tileSize * Float(address / gridSize)
         return outLocation
     }
     
@@ -281,6 +293,7 @@ class Grid: ObservableObject {
     }
     
     func reset() {
-        print("Reset puzzle")
+        print("Reset puzzle\n")
+        moves = 0
     }
 }
