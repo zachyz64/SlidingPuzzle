@@ -22,7 +22,6 @@ class Grid: ObservableObject {
     var tiles: [Tile]
     var tilesToSlide: [Tile]
     var freeSpaceAddress: Int
-    var cachedTileAddress: Int
     var slideInProgress: Bool = false
     var slideDistance: Float = 0.0
     
@@ -36,7 +35,6 @@ class Grid: ObservableObject {
         self.moves = 0
         self.tilesToSlide = []
         self.freeSpaceAddress = gridSize * gridSize - 1
-        self.cachedTileAddress = 0
     }
     
     init(device: MTLDevice, filename: String, filenameExtension: String) {
@@ -46,7 +44,6 @@ class Grid: ObservableObject {
         self.moves = 0
         self.tilesToSlide = []
         self.freeSpaceAddress = gridSize * gridSize - 1
-        self.cachedTileAddress = 0
         self.texture = loadTexture(device: device, filename, filenameExtension)
         createTiles()
     }
@@ -185,7 +182,6 @@ class Grid: ObservableObject {
             fatalError()
         }
         tiles[freeSpaceAddress].gridAddress = address
-        cachedTileAddress = address
     }
     
     private func slideTiles() {
@@ -225,7 +221,7 @@ class Grid: ObservableObject {
     private func onSlideFinished() {
         slideInProgress = false
         slideDistance = 0.0
-        freeSpaceAddress = cachedTileAddress
+        freeSpaceAddress = tiles[freeSpaceAddress].gridAddress
         tilesToSlide.removeAll()
         
         updateTiles()
