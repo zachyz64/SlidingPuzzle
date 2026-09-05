@@ -107,12 +107,13 @@ class Renderer: NSObject, MTKViewDelegate{
         renderEncoder?.setCullMode(.none)
         renderEncoder?.setFragmentSamplerState(sampler, index: 0)
         renderEncoder?.setFragmentTexture(puzzle.texture, index: 0)
+        renderEncoder?.setDepthStencilState(depthStencilState)
         
-        drawBackground(renderEncoder: renderEncoder)
         if puzzle.showTiles {
             drawTiles(renderEncoder: renderEncoder)
         }
-        
+        drawBackground(renderEncoder: renderEncoder)
+
         renderEncoder?.endEncoding()
         
         commandBuffer?.present(drawable)
@@ -135,7 +136,7 @@ class Renderer: NSObject, MTKViewDelegate{
                                        offset: 0,
                                        index: 0)
         
-        var tint: simd_float3 = simd_float3(repeating: 0.4)
+        var tint: simd_float3 = simd_float3(repeating: 0.3)
         renderEncoder?.setFragmentBytes(&tint,
                                         length: MemoryLayout<simd_float3>.stride,
                                         index: 0)
