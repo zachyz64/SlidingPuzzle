@@ -54,7 +54,7 @@ class Renderer: NSObject, MTKViewDelegate{
         vertexDescriptor.layouts[bufferIndex].stride = MemoryLayout<Vertex>.stride
         
         self.puzzle = grid
-        self.puzzle.update(device: device, filename: "Exusiai", filenameExtension: "jpg")
+        self.puzzle.update(device: device, filename: "TeaGardenMist", filenameExtension: "jpg")
         
         let library = device.makeDefaultLibrary()!
         
