@@ -100,11 +100,6 @@ class Grid: ObservableObject {
                                              bottomRight: bottomRight)
                 
                 tiles.append(Tile(screenQuad: screenQuad, textureQuad: textureQuad, gridSize: gridSize))
-
-                if (i == gridSize && j == gridSize) {
-                    tiles.last?.isActive = false
-                    freeSpaceAddress = i*j-1
-                }
                 
                 print("------------------------")
                 print("Screen Quad")
@@ -123,6 +118,10 @@ class Grid: ObservableObject {
             }
             print("")
         }
+        tiles.last?.isActive = false
+        freeSpaceAddress = gridSize * gridSize - 1
+        
+        shuffleTiles()
     }
     
     func onTileWasSelected(location: CGPoint, dimension: CGFloat) {
@@ -269,6 +268,36 @@ class Grid: ObservableObject {
             if tile.isActive && tile.gridAddress != tile.correctAddress { return false }
         }
         return true
+    }
+    
+    private func shuffleTiles() {
+        let max = gridSize*gridSize-2 // subtract 2 due to free space being last
+        
+        for _ in 1...2 {
+            let addressA = Int.random(in: 0...max)
+            var addressB = Int.random(in: 0...max)
+            while (addressB == addressA) {
+                addressB = Int.random(in: 0...max)
+            }
+            
+            // Swap tiles at addressA and addressB
+            let tempAddress = tiles[addressA].gridAddress
+            let tempLocation = tiles[addressA].location
+            tiles[addressA].gridAddress = tiles[addressB].gridAddress
+            tiles[addressA].location = tiles[addressB].location
+            tiles[addressB].gridAddress = tempAddress
+            tiles[addressB].location = tempLocation
+            
+            tiles[addressA].updateScreenQuad(location: tiles[addressA].location)
+            tiles[addressB].updateScreenQuad(location: tiles[addressB].location)
+        }
+        updateTiles()
+    }
+    
+    func reshuffleTiles() {
+        moves = 0
+        // TODO: Set tiles to correct location before shuffling(?)
+        shuffleTiles()
     }
     
     func reset() {

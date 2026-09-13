@@ -40,6 +40,14 @@ struct GameView: View {
                         .foregroundColor(.white)
                         .background(.blue)
                 }.buttonStyle(.borderedProminent)
+                
+                Button(action: { grid.reshuffleTiles() }) {
+                    Text("Reshuffle")
+                        .font(.headline)
+                        .frame(width: 80, height: 25, alignment: .center)
+                        .foregroundColor(.white)
+                        .background(.blue)
+                }.buttonStyle(.borderedProminent)
             }
             .padding()
             
