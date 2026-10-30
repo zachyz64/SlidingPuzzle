@@ -18,6 +18,8 @@ class Grid: ObservableObject {
     
     private var slideTimer: Timer
     
+    var device: MTLDevice!
+    
     var texture: MTLTexture?
     var tiles: [Tile]
     var tilesToSlide: [Tile]
@@ -35,6 +37,7 @@ class Grid: ObservableObject {
         self.moves = 0
         self.tilesToSlide = []
         self.freeSpaceAddress = gridSize * gridSize - 1
+        self.device = MTLCreateSystemDefaultDevice()
     }
     
     init(device: MTLDevice, filename: String, filenameExtension: String) {
@@ -44,6 +47,7 @@ class Grid: ObservableObject {
         self.moves = 0
         self.tilesToSlide = []
         self.freeSpaceAddress = gridSize * gridSize - 1
+        self.device = device
         self.texture = loadTexture(device: device, filename, filenameExtension)
         createTiles()
     }
@@ -51,6 +55,10 @@ class Grid: ObservableObject {
     func update(device: MTLDevice, filename: String, filenameExtension: String) {
         self.texture = loadTexture(device: device, filename, filenameExtension)
         createTiles()
+    }
+    
+    func updateTexture(device: MTLDevice, image: CGImage) {
+        self.texture = loadTexture(device: device, image: image)
     }
     
     private func loadTexture(device: MTLDevice, _ filename: String, _ filenameExtension: String) -> MTLTexture {
@@ -63,12 +71,29 @@ class Grid: ObservableObject {
         var newTexture: MTLTexture?
         do {
             newTexture = try textureLoader.newTexture(URL: textureURL,
-                                                   options: [
+                                                      options: [
                                                         .SRGB: false,
                                                         .generateMipmaps: false,
-                                                   ])
+                                                      ])
         } catch {
             fatalError("Couldn't load material \(filename)")
+        }
+        
+        return newTexture!
+    }
+    
+    private func loadTexture(device: MTLDevice, image: CGImage) -> MTLTexture {
+        
+        let textureLoader = MTKTextureLoader(device: device)
+        var newTexture: MTLTexture?
+        do {
+            newTexture = try textureLoader.newTexture(cgImage: image,
+                                                      options: [
+                                                        .SRGB: false,
+                                                        .generateMipmaps: false,
+                                                      ])
+        } catch {
+            fatalError("Couldn't load material from given CGImage")
         }
         
         return newTexture!

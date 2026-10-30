@@ -11,11 +11,13 @@ import SwiftUI
 struct SlidingPuzzleApp: App {
     
     @StateObject private var grid = Grid()
+    @StateObject private var images = ImageList()
     
     var body: some Scene {
         WindowGroup {
             GameView()
                 .environmentObject(grid)
+                .environmentObject(images)
         }
     }
 }

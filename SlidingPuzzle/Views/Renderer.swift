@@ -13,7 +13,7 @@ struct Vertex {
     let texCoord: simd_float2
 }
 
-class Renderer: NSObject, MTKViewDelegate{
+class Renderer: NSObject, MTKViewDelegate {
     var parent: PuzzleView
     var device: MTLDevice!
     var commandQueue: MTLCommandQueue!
@@ -44,7 +44,7 @@ class Renderer: NSObject, MTKViewDelegate{
         let vertexDescriptor = MTLVertexDescriptor()
         // Position 3D
         vertexDescriptor.attributes[0].format = .float3
-        vertexDescriptor.attributes[0].offset = 0
+        vertexDescriptor.attributes[0].offset = MemoryLayout.offset(of: \Vertex.position)!
         vertexDescriptor.attributes[0].bufferIndex = bufferIndex
         // Texture Coordinate
         vertexDescriptor.attributes[1].format = .float2
@@ -183,7 +183,6 @@ class Renderer: NSObject, MTKViewDelegate{
             renderEncoder?.drawPrimitives(type: .triangle,
                                           vertexStart: 0,
                                           vertexCount: 6)
-            
         }
     }
 }
