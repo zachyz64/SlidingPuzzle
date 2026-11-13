@@ -62,7 +62,7 @@ struct GameView: View {
 
             PhotosPicker(selection: $pickerItem, matching: .images) {
                 Label("Select Image", systemImage: "photo.fill")
-            }
+            }.buttonStyle(.borderedProminent)
             
             Menu("Change Image") {
                 Button(action: openList) {
@@ -89,6 +89,7 @@ struct GameView: View {
                 if let loaded = try? await pickerItem?.loadTransferable(type: Image.self) {
                     selectedImage = loaded
                     let puzzleImage = ImageRenderer(content: loaded).cgImage
+                    
                     grid.updateTexture(device: grid.device, image: puzzleImage!)
                     grid.reset()
                 }
